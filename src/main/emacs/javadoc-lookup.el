@@ -3,7 +3,7 @@
 ;;; package, class, method, or field, whose name is specified with completion.
 ;;; Originally jdk-goto-ref.el by Greg J. Badros -- 11/3/97.
 ;;; Substantially rewritten by Michael D. Ernst, 11/21/97, 4/22/99
-;;; Also see script javadoc-index-to-alist,
+;;; Also see program CreateJavadocIndex,
 ;;; which creates the file that this Emacs Lisp code uses.
 
 (defvar javadoc-ignored-prefixes
@@ -15,7 +15,7 @@ what Java entities are documented by a particular HTML file.")
 
 (defvar javadoc-index-filename (expand-file-name "~/.javadoc-index.el")
   "File mapping Java identifiers to HTML documentation files.
-The mapping is created by the javadoc-index-to-alist program.")
+The mapping is created by the CreateJavadocIndex")
 (defvar javadoc-html-refs nil
   "Alist of (id . list-of-refs), read from file `javadoc-index-filename'.")
 (if (not javadoc-html-refs)
@@ -98,6 +98,9 @@ The mapping is created by the javadoc-index-to-alist program.")
       (goto-char (point-min))
       (if (not (search-forward insertion nil t))
 	  (progn
+	    ;; skip over static imports
+	    (while (re-search-forward "^import static " nil t)
+	      (forward-line 1))
 	    (or (re-search-forward "^import\\b\\|^class\\b\\|^public\\b\\|^static\\b\\|^@SuppressWarnings\\b" nil t)
 		(re-search-forward "^/\\*" nil t))
 	    (beginning-of-line)
@@ -105,6 +108,7 @@ The mapping is created by the javadoc-index-to-alist program.")
 		(re-search-backward "\\(\n\\|\\`\\)/\\*"))
 	    (if (looking-back "^package .*;\n")
 		(insert "\n"))
+	    ;; TODO: could try to find other imports with the same package, and put it near them.
 	    (insert insertion)
 	    (if (not (looking-at "\n\\|import"))
 		(insert "\n")))))))
@@ -126,7 +130,7 @@ The mapping is created by the javadoc-index-to-alist program.")
 	  ;; Requires that compilation is run at top level; makefile must not do "cd", for example.
 	  (find-file (replace-regexp-in-string "/checker-qual/" "/checker/" filename))
 	  (if (not buffer-read-only) ;; silently ignore read-only buffers
-	      (java-insert-import class-to-import)
+	      (ignore-errors (java-insert-import class-to-import))
 	    ))))))
 
 
