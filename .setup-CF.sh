@@ -11,7 +11,6 @@ export JAVA_HOME=${JAVA_HOME:-$(dirname $(dirname $(readlink -f $(which javac)))
 
 git -C /tmp clone --depth 1 -q https://github.com/plume-lib/plume-scripts.git
 
-export JSR308="${JSR308:-$(cd .. && pwd -P)}"
 export CHECKERFRAMEWORK="${CHECKERFRAMEWORK:-$(pwd -P)/../checker-framework}"
 
 ## Build Checker Framework
