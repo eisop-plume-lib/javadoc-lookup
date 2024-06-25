@@ -44,6 +44,9 @@ dependencies {
   // findbugs is used by Jsoup, needed to avoid compilation warnings.
   implementation 'com.google.code.findbugs:jsr305:3.0.2'
   implementation 'org.jsoup:jsoup:1.17.2'
+  // JSoup uses NullMarked. On Java 8 & 9 the CF raises an error if the
+  // annotation isn't attributed.
+  compileOnly 'org.jspecify:jspecify:0.3.0'
   implementation 'org.plumelib:plume-util:1.9.3'
 }
 
@@ -89,7 +92,12 @@ if (isJava11orHigher) {
 tasks.withType(JavaCompile).configureEach {
   // "-processing" avoids javac warning "No processor claimed any of these annotations".
   // "-Xlint:-options" is because of JDK 21 warning "source value 8 is obsolete..."
-  options.compilerArgs << '-Xlint:all,-processing,-options' << '-Werror'
+  options.compilerArgs << '-Xlint:all,-processing,-options'
+  if (isJava11orHigher) {
+    // Java 8 & 9 produce a `warning: unknown enum constant ElementType.MODULE`
+    // because of the JSpecify annotations.
+    options.compilerArgs << '-Werror'
+  }
   options.errorprone.enabled = isJava11orHigher
   options.errorprone {
     disable('ExtendsObject')  // Incorrect when using the Checker Framework
