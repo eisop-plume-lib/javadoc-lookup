@@ -31,15 +31,17 @@ import org.jsoup.select.Elements;
 // Handles only globs within a single directory.
 
 /**
- * CreateJavadocIndex reads {@code index-all.html} API documentation files and outputs an index that
- * Emacs can use for looking up Java documentation.
+ * CreateJavadocIndex reads {@code index-all.html} API documentation files (typically {@code
+ * index-all.html} files) and outputs an index that Emacs can use for looking up Java documentation.
  *
- * <p>With no arguments, it uses a default list from file {@code ~/.javadoc-index-files} .
+ * <p>With no arguments, it reads file {@code ~/.javadoc-index-files}, which should contain a list
+ * of API documentation files, one per line. Blank lines are permitted in the file, as are comment
+ * lines that start with "#".
  *
  * <p>For example, run it like this:
  *
  * <pre>
- * java -cp .../javadoc-lookup/build/libs/javadoclookup-all.jar \
+ * java -cp .../javadoc-lookup/build/libs/javadoc-lookup-all.jar \
  *   org.plumelib.javadoclookup.CreateJavadocIndex &gt; ~/.javadoc-index.el
  * </pre>
  */
@@ -115,9 +117,15 @@ public final class CreateJavadocIndex {
           System.out.println("  title = " + title);
         }
         if (title.startsWith("annotation in ")
+            || title.startsWith("annotation interface in ")
             || title.startsWith("class in ")
+            || title.startsWith("class or interface in ") // do I want this one?
             || title.startsWith("enum in ")
-            || title.startsWith("interface in ")) {
+            || title.startsWith("enum class in ")
+            || title.startsWith("interface in ")
+        // I don't want type parameters.
+        // || title.startsWith("type parameter in ")
+        ) {
           addToIndex(atitle.html(), atitle.attributes().get("href"), dir);
         }
       }
@@ -204,6 +212,10 @@ public final class CreateJavadocIndex {
    * @param dir the relative directory for the value
    */
   private static void addToIndex(String item, String href, Path dir) {
+    if (href.contains("http:") || href.contains("https:")) {
+      return;
+    }
+
     item = item.replaceAll("&lt;", "<");
     item = item.replaceAll("&gt;", ">");
     item = item.replaceAll("</?code>", "");
