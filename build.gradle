@@ -47,7 +47,7 @@ dependencies {
   // JSoup uses NullMarked. On Java 8 & 9 the CF raises an error if the
   // annotation isn't attributed.
   compileOnly 'org.jspecify:jspecify:1.0.0'
-  implementation 'org.plumelib:plume-util:1.9.3'
+  implementation 'org.plumelib:plume-util:1.10.0'
 }
 
 application {
