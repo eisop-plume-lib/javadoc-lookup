@@ -43,7 +43,7 @@ dependencies {
 
   // findbugs is used by Jsoup, needed to avoid compilation warnings.
   implementation 'com.google.code.findbugs:jsr305:3.0.2'
-  implementation 'org.jsoup:jsoup:1.18.1'
+  implementation 'org.jsoup:jsoup:1.18.2'
   // JSoup uses NullMarked. On Java 8 & 9 the CF raises an error if the
   // annotation isn't attributed.
   compileOnly 'org.jspecify:jspecify:1.0.0'
