@@ -94,7 +94,6 @@ tasks.withType(JavaCompile).configureEach {
     disable('ExtendsObject')  // Incorrect when using the Checker Framework
     disable('ReferenceEquality') // Use Interning Checker instead.
   }
-  options.errorprone.enabled = isJava17orHigher
 }
 
 // Checker Framework pluggable type-checking
